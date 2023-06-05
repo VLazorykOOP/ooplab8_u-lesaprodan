@@ -151,3 +151,120 @@ int main() {
 
     return 0;
 }
+
+
+#include <iostream>
+
+template <typename T>
+class CyclicQueue {
+private:
+    T* buffer;
+    int capacity;
+    int front;
+    int rear;
+    int count;
+
+public:
+    CyclicQueue(int size) : capacity(size), front(0), rear(0), count(0) {
+        buffer = new T[size];
+    }
+
+    ~CyclicQueue() {
+        delete[] buffer;
+    }
+
+    bool isEmpty() {
+        return (count == 0);
+    }
+
+    bool isFull() {
+        return (count == capacity);
+    }
+
+    void enqueue(T item) {
+        if (isFull()) {
+            std::cout << "Queue is full. Unable to enqueue." << std::endl;
+            return;
+        }
+
+        buffer[rear] = item;
+        rear = (rear + 1) % capacity;
+        count++;
+    }
+
+    T dequeue() {
+        if (isEmpty()) {
+            std::cout << "Queue is empty. Unable to dequeue." << std::endl;
+            return T();
+        }
+
+        T item = buffer[front];
+        front = (front + 1) % capacity;
+        count--;
+        return item;
+    }
+
+    void printQueue() {
+        if (isEmpty()) {
+            std::cout << "Queue is empty." << std::endl;
+            return;
+        }
+
+        std::cout << "Queue: ";
+        int index = front;
+        for (int i = 0; i < count; i++) {
+            std::cout << buffer[index] << " ";
+            index = (index + 1) % capacity;
+        }
+        std::cout << std::endl;
+    }
+};
+
+int main() {
+    int size;
+    std::cout << "Enter the size of the queue: ";
+    std::cin >> size;
+
+    CyclicQueue<int> queue(size);
+
+    int choice, value;
+
+    do {
+        std::cout << "\n1. Enqueue\n";
+        std::cout << "2. Dequeue\n";
+        std::cout << "3. Print Queue\n";
+        std::cout << "4. Quit\n";
+        std::cout << "Enter your choice: ";
+        std::cin >> choice;
+
+        switch (choice) {
+        case 1:
+            std::cout << "Enter the value to enqueue: ";
+            std::cin >> value;
+            queue.enqueue(value);
+            queue.printQueue();
+            break;
+        case 2:
+            if (!queue.isEmpty()) {
+                int item = queue.dequeue();
+                std::cout << "Dequeued value: " << item << std::endl;
+                queue.printQueue();
+            }
+            else {
+                std::cout << "Queue is empty. Unable to dequeue." << std::endl;
+            }
+            break;
+        case 3:
+            queue.printQueue();
+            break;
+        case 4:
+            std::cout << "Quitting the program." << std::endl;
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+            break;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
